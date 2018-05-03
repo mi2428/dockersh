@@ -1,2 +1,14 @@
 #!/bin/bash
-docker run --rm -it ubuntu:latest /bin/bash
+
+echored(){ echo -e "\033[0;31m$@\033[0m"; }
+
+echored
+echored
+echored '警告：すべての変更は失われます'
+echored
+echored '接続先の環境はホストから隔離されたコンテナ環境になります'
+echored 'このコンテナは新規セッション毎に生成され，終了時に破棄されます'
+echored
+echored
+
+docker run --rm -it dockersh
