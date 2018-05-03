@@ -2,13 +2,17 @@
 
 echored(){ echo -e "\033[0;31m$@\033[0m"; }
 
+MEMORY=128mb
+DNS1=10.0.3.33
+DNS2=10.0.3.34
+
 echored
 echored
 echored '警告：すべての変更は失われます'
 echored
-echored '接続先の環境はホストから隔離されたコンテナ環境になります'
-echored 'このコンテナは新規セッション毎に生成され，終了時に破棄されます'
+echored '接続先の環境はホストから隔離されたコンテナ環境です'
+echored 'このコンテナはセッション毎に新規に生成され，終了時に破棄されます'
 echored
 echored
 
-docker run --rm -it dockersh
+docker run --rm -it --memory=${MEMORY} --dns=${DNS1} --dns=${DNS2} dockersh
