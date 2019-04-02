@@ -2,7 +2,7 @@
 
 echored(){ echo -e "\033[0;31m$@\033[0m"; }
 
-MEMORY=128mb
+MEMORY=64mb
 DNS1=10.0.3.33
 DNS2=10.0.3.34
 
@@ -15,4 +15,13 @@ echored 'このコンテナはセッション毎に新規に生成され，終�
 echored
 echored
 
-docker run --rm -it --memory=${MEMORY} --dns=${DNS1} --dns=${DNS2} dockersh
+docker run --rm -it \
+    -e LOCAL_USER=$USER \
+    -e LOCAL_UID=$(id -u $USER) \
+    -e LOCAL_GID=$(id -g $USER) \
+    -v /opt/fumidai/authorized_keys:/fumidai_ssh_keys \
+    --memory=${MEMORY} \
+    --dns=${DNS1} --dns=${DNS2} \
+    dockersh
+
+# called below after container exit
