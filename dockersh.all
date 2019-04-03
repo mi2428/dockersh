@@ -1,21 +1,25 @@
 #!/bin/bash
 
 echored(){ echo -e "\033[0;31m$@\033[0m"; }
+echobred(){ echo -e "\033[1;31m$@\033[0m"; }
 
 MEMORY=64mb
 DNS1=10.0.3.33
 DNS2=10.0.3.34
+HOSTNAME="fumidai-$(openssl rand -base64 12 2> /dev/null | md5sum | cut -b 1-7)"
 
 echored
 echored
-echored '警告：すべての変更は失われます'
+echobred '*警告* これよりすべての変更は失われます'
 echored
-echored '接続先の環境はホストから隔離されたコンテナ環境です'
-echored 'このコンテナはセッション毎に新規に生成され，終了時に破棄されます'
+echored '✔ 物理サーバと隔離された空間（コンテナ）にログインします'
+echored '✔ このコンテナはセッション毎に自動で生成・破棄されます'
 echored
 echored
 
 docker run --rm -it \
+    -h $HOSTNAME \
+    --name $HOSTNAME \
     -e LOCAL_USER=$USER \
     -e LOCAL_UID=$(id -u $USER) \
     -e LOCAL_GID=$(id -g $USER) \
@@ -28,6 +32,7 @@ docker run --rm -it \
 # called below after container exit
 
 echored
-echored 'コンテナは破棄されました'
+echored
+echored '✔ コンテナは破棄されました'
 echored
 

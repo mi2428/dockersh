@@ -12,7 +12,7 @@ usermod -u $USER_ID -g $GROUP_ID $USER
 chown -R $USER_ID:$GROUP_ID /home/deleteme
 cd /home/deleteme
 
-echoblue "Login container ID: $(hostname)"
-echoblue "Starting with USER: $USER (UID: $USER_ID, GID: $GROUP_ID)"
+echoblue "New container: $(hostname)"
+echoblue "Starting with local user '$USER' ($USER_ID:$GROUP_ID)"
 
 exec /usr/sbin/gosu $USER "$@"
