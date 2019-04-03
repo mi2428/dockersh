@@ -19,9 +19,15 @@ docker run --rm -it \
     -e LOCAL_USER=$USER \
     -e LOCAL_UID=$(id -u $USER) \
     -e LOCAL_GID=$(id -g $USER) \
-    -v /opt/fumidai/authorized_keys:/fumidai_ssh_keys \
+    -v /opt/fumidai/authorized_keys:/fumidai_ssh_keys:z \
+    -v /usr/local/src/dockersh/ssh.config:/home/deleteme/.ssh/config:ro \
     --memory=${MEMORY} \
     --dns=${DNS1} --dns=${DNS2} \
     dockersh
 
 # called below after container exit
+
+echored
+echored 'コンテナは破棄されました'
+echored
+

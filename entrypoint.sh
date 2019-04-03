@@ -10,6 +10,7 @@ usermod -l $USER deleteme
 groupadd -g $GROUP_ID $USER || groupmod -g $GROUP_ID $USER
 usermod -u $USER_ID -g $GROUP_ID $USER
 chown -R $USER_ID:$GROUP_ID /home/deleteme
+cd /home/deleteme
 
 echoblue "Login container ID: $(hostname)"
 echoblue "Starting with USER: $USER (UID: $USER_ID, GID: $GROUP_ID)"
