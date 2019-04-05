@@ -1,0 +1,81 @@
+#!/bin/bash
+
+MEMORY=64mb
+DNS1=10.0.3.33
+DNS2=10.0.3.34
+HOSTNAME="fumidai-$(openssl rand -base64 12 2> /dev/null | md5sum | cut -b 1-7)"
+(( $# == 0 )) && is_empty_command=true || is_empty_command=false
+(( $# > 1 )) && [[ $1 == '-c' ]] && ARGS="${@:2:($#-1)}" || ARGS="$@"
+(( ${#ARGS[@]} == 1 )) && ! $is_empty_command && is_single_command=true || is_single_command=false
+
+log(){
+    (( $# != 2 )) && echo
+    local level="$1"
+    local message="$2"
+    case $level in
+        "--warn")
+            echo -e "\033[1;31m[ 警 告 ] $message\033[0m" ;;
+        "--caution")
+            echo -e "\033[0;31m[ 注 意 ] $message\033[0m" ;;
+        "--success")
+            echo -e "\033[1;34m[ 成 功 ] $message\033[0m" ;;
+        "--info")
+            echo -e "\033[0;34m[ 情 報 ] $message\033[0m" ;;
+    esac
+}
+
+[[ ${ARGS[0]} == 'registkey' ]] && [[ $USER == 'all' ]] && \
+    is_regist_request=true || is_regist_request=false
+if $is_single_command && $is_regist_request; then
+    log
+    log
+    log --info "あなたの公開鍵は $(tee -a /opt/fumidai/authorized_keys)"
+
+    if (( $? == 0 )); then
+        log --success '公開鍵の登録が完了しました'
+        log --info '踏み台ログイン後も /fumidai_ssh_keys で公開鍵を編集できます'
+        log
+        log
+    fi
+
+    exit 0
+fi
+
+log
+log
+log --warn 'これよりすべての変更は失われます'
+log --caution '物理サーバと隔離された空間（コンテナ）にログインします'
+log --caution 'このコンテナはセッション毎に自動で生成・破棄されます'
+
+if ! $is_empty_command; then
+    option="-i"
+    cmd="/bin/bash -c $ARGS"
+    log --info "実行するコマンドは $ARGS"
+else
+    option="-it"
+    cmd=""
+    log --info '疑似TTYが割り当てられます'
+fi
+
+log
+log
+
+docker run --rm $option \
+    -h $HOSTNAME \
+    --name $HOSTNAME \
+    -e LOCAL_USER=$USER \
+    -e LOCAL_UID=$(id -u $USER) \
+    -e LOCAL_GID=$(id -g $USER) \
+    -v /opt/fumidai/authorized_keys:/fumidai_ssh_keys:z \
+    -v /usr/local/src/dockersh/ssh.config:/home/deleteme/.ssh/config:ro \
+    --memory=${MEMORY} \
+    --dns=${DNS1} --dns=${DNS2} \
+    dockersh $cmd
+
+# called below after container exit
+
+log
+log
+log --caution 'コンテナは破棄されました'
+log
+log
