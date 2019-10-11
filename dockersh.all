@@ -1,8 +1,8 @@
 #!/bin/bash
 
 MEMORY=64mb
-DNS1=10.0.3.33
-DNS2=10.0.3.34
+DNS1=10.0.5.55
+DNS2=10.0.5.56
 HOSTNAME="fumidai-$(openssl rand -base64 12 2> /dev/null | md5sum | cut -b 1-7)"
 (( $# == 0 )) && is_empty_command=true || is_empty_command=false
 (( $# > 1 )) && [[ $1 == '-c' ]] && ARGS="${@:2:($#-1)}" || ARGS="$@"
